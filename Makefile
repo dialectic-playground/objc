@@ -28,7 +28,7 @@ STANDARD_FILES := LICENSE README.md Containerfile Makefile .editorconfig .gitatt
 	$(CURRICULUM_ROOT)/curriculum.toml
 # Objective-C: Apple Clang + Foundation on macOS; GNUstep Base elsewhere (GCC on Linux,
 # Clang in MSYS2 CLANG64 on Windows).
-# (GNU Make predefines OBJC=cc, so only its default value is replaced.)
+# (GNU Make 3.82+ predefines OBJC=cc; only a default or missing value is replaced.)
 ifeq ($(shell uname -s),Darwin)
   OBJC_DEFAULT := clang
   OBJC_CFLAGS ?= -x objective-c
@@ -38,7 +38,7 @@ else
   OBJC_CFLAGS ?= $$(gnustep-config --objc-flags)
   OBJC_LIBS ?= $$(gnustep-config --base-libs)
 endif
-ifeq ($(origin OBJC),default)
+ifneq ($(filter default undefined,$(origin OBJC)),)
   OBJC := $(OBJC_DEFAULT)
 endif
 
