@@ -13,7 +13,7 @@
 
 # Project directories whose implementation is complete enough to build and test, in
 # curriculum order (for example: 00-hello-world 01-echo). CI covers exactly these.
-IMPLEMENTED :=
+IMPLEMENTED := 00-hello-world
 
 DP_HOST_GOALS += help roundtrip
 include tools/container.mk
@@ -41,6 +41,7 @@ endif
 ifneq ($(filter default undefined,$(origin OBJC)),)
   OBJC := $(OBJC_DEFAULT)
 endif
+CLANG_FORMAT ?= clang-format
 
 .PHONY: check check-repository toolchain projects roundtrip help
 
@@ -65,11 +66,14 @@ check-repository:
 	exit $$status
 
 # The native compiler differs by OS, so the toolchain is verified by a
-# language-standard compile-and-run probe rather than a version line.
+# language-standard compile-and-run probe rather than a version line. clang-format
+# (make lint / make format) must be 19.1.7, as in the container, everywhere.
 toolchain:
 	python3 --version || python --version
 	make --version | head -1
 	$(OBJC) --version | head -1
+	$(CLANG_FORMAT) --version | head -1
+	@$(CLANG_FORMAT) --version | grep -q 'version 19\.1\.7' || { echo "toolchain: clang-format 19.1.7 is required (.clang-format)" >&2; exit 1; }
 	@probe="$${TMPDIR:-/tmp}/dp-probe-$$$$"; printf '#import <Foundation/Foundation.h>\nint main(void) { NSAutoreleasePool *pool = [NSAutoreleasePool new]; NSString *s = [NSString stringWithFormat: @"%%d", 42]; int ok = [s isEqualToString: @"42"]; [pool drain]; return ok ? 0 : 1; }\n' > "$$probe.m" && $(OBJC) $(OBJC_CFLAGS) -o "$$probe" "$$probe.m" $(OBJC_LIBS) && "$$probe" && rm -f "$$probe" "$$probe.exe" "$$probe.m" && echo "toolchain: Objective-C Foundation compile-and-run probe passed"
 
 projects:

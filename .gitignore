@@ -10,3 +10,10 @@ __pycache__/
 *.swp
 .DS_Store
 Thumbs.db
+
+# Repository-specific: Objective-C build output of every project, including GNUstep's
+# dependency (.d) files (make clean removes it).
+build/
+*.d
+*.o
+*.exe

@@ -1,5 +1,6 @@
 # Keeps GitHub Actions (SHA-pinned) and the toolchain image digest current.
-# Package ecosystems (GNUstep Make) are added when the first project's manifests exist.
+# Objective-C (GNUstep Make / plain make) has no Dependabot package ecosystem, and the projects
+# use no third-party packages: Foundation comes with the toolchain.
 version: 2
 updates:
   - package-ecosystem: github-actions

@@ -7,6 +7,7 @@
 # - Container (podman): `make check` in the toolchain image (./Containerfile), on Linux.
 # - Native (Linux, macOS, Windows): `make check roundtrip` with DP_RUNTIME=local;
 #   toolchain: Linux: GCC Objective-C + GNUstep Base (apt); macOS: Apple Clang + Foundation; Windows: MSYS2 CLANG64 with GNUstep Base and libobjc2.
+#   Plus clang-format 19.1.7 (PyPI wheel, the container's version) for make lint / make format.
 # - Shared tooling, DCO, and the required "CI result" check, as in every repository.
 #
 # Actions are pinned to full commit SHAs (organization policy); Dependabot keeps them current.
@@ -89,14 +90,23 @@ jobs:
             mingw-w64-clang-x86_64-gnustep-make
             mingw-w64-clang-x86_64-gnustep-base
 
+      # clang-format from PyPI, pinned to the container's version (Debian trixie: 19.1.7), so
+      # `make lint` judges formatting identically on every OS.
+      - name: Install clang-format (lint / format)
+        run: python -m pip install --disable-pip-version-check clang-format==19.1.7 && clang-format --version
+
       - name: make check roundtrip
         if: runner.os != 'Windows'
         run: make check roundtrip
 
+      # MSYS2's clang package ships its own (newer) clang-format in /clang64/bin, which comes
+      # first on the inherited PATH; put the PyPI 19.1.7 wheel's Scripts directory ahead of it.
       - name: make check roundtrip (MSYS2 CLANG64)
         if: runner.os == 'Windows'
         shell: msys2 {0}
-        run: make check roundtrip
+        run: |
+          PATH="$(cygpath -u "$pythonLocation")/Scripts:$PATH"
+          make check roundtrip
 
   shared-tooling:
     name: Shared tooling

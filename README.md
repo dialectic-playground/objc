@@ -16,7 +16,7 @@ This repository implements the eleven projects of the
 specified to the byte by the curriculum and verified by its black-box tests on Linux, macOS,
 and Windows.
 
-**Status:** repository and toolchain ready; no projects implemented yet.
+**Status:** Implemented projects: 00-hello-world.
 
 ## Objective-C at a glance
 
@@ -33,11 +33,35 @@ and Windows.
 | | |
 | :-- | :-- |
 | Release line | Objective-C with Foundation (GNUstep Base; Apple Foundation on macOS) |
-| Build / package tool | GNUstep Make |
+| Build / package tool | GNU Make: the project `Makefile` hooks compile directly, with `gnustep-config` supplying the GNUstep flags (GNUstep Make is installed but not needed) |
 | Container image | `debian:trixie-slim + GCC Objective-C + GNUstep Base`, pinned by digest ([`Containerfile`](Containerfile)) |
 | Native CI | Linux: GCC Objective-C + GNUstep Base (apt); macOS: Apple Clang + Foundation; Windows: MSYS2 CLANG64 with GNUstep Base and libobjc2 |
 
-`make toolchain` verifies that the container and native toolchains are on this release line.
+| Unit tests | Plain assertions with the repository's own small runner (`src/Tests/DPHTestSupport.[hm]`) |
+| Lint | Warning-free build with `-std=gnu11 -Wall -Werror` (plus GNUstep's own flags), and `clang-format --dry-run --Werror` |
+| Format | `clang-format -i` 19.1.7, style in [`.clang-format`](.clang-format) (shared by every project) |
+| Dependencies | None beyond Foundation (no package manager; Dependabot has no Objective-C ecosystem) |
+
+`make toolchain` verifies that the container and native toolchains are on this release line,
+with a Foundation compile-and-run probe, and that `clang-format` is version 19.1.7
+everywhere: the container image adds Debian trixie's `clang-format` (19.1.7), and native CI
+installs the same version from PyPI (`pip install clang-format==19.1.7`) on all three OSes.
+On Windows, MSYS2's `clang` package ships its own, newer `clang-format` in `/clang64/bin`, so
+CI puts the PyPI wheel's `Scripts` directory first on `PATH` in the MSYS2 shell; do the same
+locally. The style ([`.clang-format`](.clang-format): Google, 100 columns, pointer left) is
+shared with the C and C++ repositories.
+
+The code is written once for three compilers and Foundations: GCC's Objective-C front end
+with GNUstep Base (container, Linux), Apple Clang with Foundation (macOS), and Clang with
+libobjc2 and GNUstep Base (MSYS2 CLANG64 on Windows). GCC supports neither ARC,
+`@autoreleasepool`, nor the `@[]`/`@{}`/`@()` literals, so the projects use manual reference
+counting with `NSAutoreleasePool` and plain message sends, and keep command-line bytes as C
+strings and output as `NSData`. Each project builds into its own `build/` directory (`make
+clean` removes it); `make all` leaves the native executable in `build/bin/` (`dp-hello.exe` on
+Windows), and `make install` copies it to `$(BINDIR)`. On Windows, builds enter through `wmain`
+(`-municode`), convert the UTF-16 command line to UTF-8, and switch stdout and stderr to
+binary mode, so arguments and output bytes match Linux and macOS exactly. Run the native
+Windows build from the MSYS2 CLANG64 shell.
 
 ## Layout
 
@@ -67,9 +91,8 @@ make -C 00-hello-world help   # a project's configuration and hooks
 ## Implementing a project
 
 1. Complete the project's `hld.md` and `lld.md` before writing code.
-2. Write the implementation and its unit tests under the project's `src/`, add the
-   repository's GNUstep Make configuration, and fill in `BIN_DIR` and the `DP_*` hooks in
-   the project's `Makefile`.
+2. Write the implementation and its unit tests under the project's `src/`, and fill in
+   `BIN_DIR` and the `DP_*` hooks in the project's `Makefile` (see `00-hello-world/Makefile`).
 3. Pass `make -C <project> test` (container) and `DP_RUNTIME=local make -C <project> test`.
 4. Add the project directory to `IMPLEMENTED` in the root `Makefile`. CI then builds, lints,
    and tests it in the container and natively on all three operating systems.
