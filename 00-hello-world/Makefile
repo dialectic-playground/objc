@@ -21,16 +21,16 @@ CURRICULUM_ROOT ?= ../sdlc-curriculum
 # The compiler and Foundation flags per OS, as in the root Makefile's toolchain probe.
 # (GNU Make 3.82+ predefines OBJC=cc; only a default or missing value is replaced.)
 ifeq ($(shell uname -s),Darwin)
-  OBJC_DEFAULT := clang
-  OBJC_CFLAGS ?= -x objective-c
-  OBJC_LIBS ?= -framework Foundation
+OBJC_DEFAULT := clang
+OBJC_CFLAGS ?= -x objective-c
+OBJC_LIBS ?= -framework Foundation
 else
-  OBJC_DEFAULT := $(if $(filter Windows_NT,$(OS)),clang,gcc)
-  OBJC_CFLAGS ?= $$(gnustep-config --objc-flags)
-  OBJC_LIBS ?= $$(gnustep-config --base-libs)
+OBJC_DEFAULT := $(if $(filter Windows_NT,$(OS)),clang,gcc)
+OBJC_CFLAGS ?= $$(gnustep-config --objc-flags)
+OBJC_LIBS ?= $$(gnustep-config --base-libs)
 endif
 ifneq ($(filter default undefined,$(origin OBJC)),)
-  OBJC := $(OBJC_DEFAULT)
+OBJC := $(OBJC_DEFAULT)
 endif
 CLANG_FORMAT ?= clang-format
 
