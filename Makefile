@@ -30,16 +30,16 @@ STANDARD_FILES := LICENSE README.md Containerfile Makefile .editorconfig .gitatt
 # Clang in MSYS2 CLANG64 on Windows).
 # (GNU Make 3.82+ predefines OBJC=cc; only a default or missing value is replaced.)
 ifeq ($(shell uname -s),Darwin)
-  OBJC_DEFAULT := clang
-  OBJC_CFLAGS ?= -x objective-c
-  OBJC_LIBS ?= -framework Foundation
+	OBJC_DEFAULT := clang
+	OBJC_CFLAGS ?= -x objective-c
+	OBJC_LIBS ?= -framework Foundation
 else
-  OBJC_DEFAULT := $(if $(filter Windows_NT,$(OS)),clang,gcc)
-  OBJC_CFLAGS ?= $$(gnustep-config --objc-flags)
-  OBJC_LIBS ?= $$(gnustep-config --base-libs)
+	OBJC_DEFAULT := $(if $(filter Windows_NT,$(OS)),clang,gcc)
+	OBJC_CFLAGS ?= $$(gnustep-config --objc-flags)
+	OBJC_LIBS ?= $$(gnustep-config --base-libs)
 endif
 ifneq ($(filter default undefined,$(origin OBJC)),)
-  OBJC := $(OBJC_DEFAULT)
+	OBJC := $(OBJC_DEFAULT)
 endif
 CLANG_FORMAT ?= clang-format
 
@@ -62,7 +62,7 @@ check-repository:
 		matches=$$(git grep -n "$$marker" -- . ':!.github' ':!tools' ':!$(CURRICULUM_ROOT)'); \
 	else \
 		matches=$$(grep -rn --exclude-dir=.git --exclude-dir=.github --exclude-dir=tools \
-		        --exclude-dir=$(CURRICULUM_ROOT) "$$marker" .); \
+						--exclude-dir=$(CURRICULUM_ROOT) "$$marker" .); \
 	fi; \
 	if [ -n "$$matches" ]; then \
 		printf '%s\n' "$$matches"; echo "replace every $$marker marker listed above"; status=1; \

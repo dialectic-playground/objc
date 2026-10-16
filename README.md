@@ -1,3 +1,19 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+**Table of Contents** _generated with [DocToc](https://github.com/thlorenz/doctoc)_
+
+- [objc](#objc)
+  - [Objective-C at a glance](#objective-c-at-a-glance)
+  - [Toolchain](#toolchain)
+  - [Layout](#layout)
+  - [Development](#development)
+  - [Implementing a project](#implementing-a-project)
+  - [Contributing](#contributing)
+  - [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/dialectic-playground/.github/main/assets/objc/dist/logo-dark.svg">
@@ -20,22 +36,22 @@ and Windows.
 
 ## Objective-C at a glance
 
-| Aspect | Objective-C |
-| :-- | :-- |
-| File extension | `.m` |
-| CLI classification | Included |
-| Image category | Native Toolchain |
-| Access to OS primitives | Absolute & Direct (Strict superset of C) |
-| Entry-point mechanism | Compiles directly; maps arguments using standard C main structure |
+| Aspect                  | Objective-C                                                       |
+| :---------------------- | :---------------------------------------------------------------- |
+| File extension          | `.m`                                                              |
+| CLI classification      | Included                                                          |
+| Image category          | Native Toolchain                                                  |
+| Access to OS primitives | Absolute & Direct (Strict superset of C)                          |
+| Entry-point mechanism   | Compiles directly; maps arguments using standard C main structure |
 
 ## Toolchain
 
-| | |
-| :-- | :-- |
-| Release line | Objective-C with Foundation (GNUstep Base; Apple Foundation on macOS) |
+|                      |                                                                                                                                                       |
+| :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Release line         | Objective-C with Foundation (GNUstep Base; Apple Foundation on macOS)                                                                                 |
 | Build / package tool | GNU Make: the project `Makefile` hooks compile directly, with `gnustep-config` supplying the GNUstep flags (GNUstep Make is installed but not needed) |
-| Container image | `debian:trixie-slim + GCC Objective-C + GNUstep Base`, pinned by digest ([`Containerfile`](Containerfile)) |
-| Native CI | Linux: GCC Objective-C + GNUstep Base (apt); macOS: Apple Clang + Foundation; Windows: MSYS2 CLANG64 with GNUstep Base and libobjc2 |
+| Container image      | `debian:trixie-slim + GCC Objective-C + GNUstep Base`, pinned by digest ([`Containerfile`](Containerfile))                                            |
+| Native CI            | Linux: GCC Objective-C + GNUstep Base (apt); macOS: Apple Clang + Foundation; Windows: MSYS2 CLANG64 with GNUstep Base and libobjc2                   |
 
 | Unit tests | Plain assertions with the repository's own small runner (`src/Tests/DPHTestSupport.[hm]`) |
 | Lint | Warning-free build with `-std=gnu11 -Wall -Werror` (plus GNUstep's own flags), and `clang-format --dry-run --Werror` |
@@ -65,14 +81,14 @@ Windows build from the MSYS2 CLANG64 shell.
 
 ## Layout
 
-| Path | Contents |
-| :--- | :--- |
+| Path                                  | Contents                                                                                                          |
+| :------------------------------------ | :---------------------------------------------------------------------------------------------------------------- |
 | `00-hello-world/` … `10-sys-monitor/` | One workspace per curriculum project: `Makefile` (with `DP_*` hooks), HLD, LLD, RTM, master test plan, and `src/` |
-| `sdlc-curriculum/` | The curriculum, as a git submodule pinned to a release tag |
-| `Makefile` | `make check` (repository, toolchain, implemented projects), `toolchain`, `projects`, `roundtrip` |
-| `Containerfile`, `.devcontainer/` | The toolchain image and the matching dev container |
-| `tools/dp-run`, `tools/container.mk` | Shared container tooling (copies of the canonical files in `dialectic-playground/.github`) |
-| `.github/workflows/ci.yml` | CI: container and native (Linux, macOS, Windows) `make` targets, shared-tooling check, DCO |
+| `sdlc-curriculum/`                    | The curriculum, as a git submodule pinned to a release tag                                                        |
+| `Makefile`                            | `make check` (repository, toolchain, implemented projects), `toolchain`, `projects`, `roundtrip`                  |
+| `Containerfile`, `.devcontainer/`     | The toolchain image and the matching dev container                                                                |
+| `tools/dp-run`, `tools/container.mk`  | Shared container tooling (copies of the canonical files in `dialectic-playground/.github`)                        |
+| `.github/workflows/ci.yml`            | CI: container and native (Linux, macOS, Windows) `make` targets, shared-tooling check, DCO                        |
 
 ## Development
 
